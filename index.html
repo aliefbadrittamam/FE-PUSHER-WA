@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>WhatsApp Web - Dynamic Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+</head>
+
+<body class="bg-gray-100 h-screen overflow-hidden">
+    <div class="flex h-full">
+        <!-- Sidebar -->
+        <div class="w-1/3 bg-white border-r border-gray-300 flex flex-col">
+            <!-- Header -->
+            <div class="bg-gray-50 p-4 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <img src="https://picsum.photos/40/40?random=1" alt="User" class="w-10 h-10 rounded-full">
+                    <h2 class="font-semibold text-gray-800">My Chats</h2>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="p-3 border-b border-gray-200">
+                <div class="relative">
+                    <input type="text" placeholder="Search or start new chat"
+                        class="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg focus:outline-none focus:bg-white focus:ring-2 focus:ring-green-500">
+                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Chat List -->
+            <div class="flex-1 overflow-y-auto">
+                <div id="chatList">
+                    <div class="chat-item p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors bg-green-50 border-r-4 border-green-500"
+                        data-chat="walid" data-event="walid-message">
+                        <div class="flex items-center space-x-3">
+                            <img src="https://picsum.photos/48/48?random=2" alt="WALID"
+                                class="w-12 h-12 rounded-full">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-semibold text-gray-900 truncate">WALID</h3>
+                                    <span class="text-xs text-gray-500 chat-time"></span>
+                                </div>
+                                <p class="text-sm text-gray-600 truncate chat-last-message">Welcome to WALID chat.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-item p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+                        data-chat="renal" data-event="renal-message">
+                        <div class="flex items-center space-x-3">
+                            <img src="https://picsum.photos/48/48?random=3" alt="RENAL"
+                                class="w-12 h-12 rounded-full">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-semibold text-gray-900 truncate">RENAL</h3>
+                                    <span class="text-xs text-gray-500 chat-time"></span>
+                                </div>
+                                <p class="text-sm text-gray-600 truncate chat-last-message">Welcome to RENAL chat.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-item p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+                        data-chat="admin" data-event="admin-message">
+                        <div class="flex items-center space-x-3">
+                            <img src="https://picsum.photos/48/48?random=4" alt="ADMIN"
+                                class="w-12 h-12 rounded-full">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-semibold text-gray-900 truncate">ADMIN</h3>
+                                    <span class="text-xs text-gray-500 chat-time"></span>
+                                </div>
+                                <p class="text-sm text-gray-600 truncate chat-last-message">Admin support channel.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="flex-1 flex flex-col">
+            <!-- Chat Header -->
+            <div class="bg-gray-50 p-4 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <img id="chatAvatar" src="https://picsum.photos/40/40?random=2" alt="Chat"
+                        class="w-10 h-10 rounded-full">
+                    <div>
+                        <h3 id="chatName" class="font-semibold text-gray-900">WALID</h3>
+                        <p id="chatStatus" class="text-sm text-gray-500">
+                            Channel: <span id="currentChannel">my-channel</span> | 
+                            Event: <span id="currentEvent">walid-message</span>
+                        </p>
+                    </div>
+                    <div class="flex-1"></div>
+                    <div class="flex space-x-2">
+                        <button class="p-2 rounded-full hover:bg-gray-200 transition-colors">
+                            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                            </svg>
+                        </button>
+                        <button class="p-2 rounded-full hover:bg-gray-200 transition-colors">
+                            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
+                            </svg>
+                        </button>
+                        <button class="p-2 rounded-full hover:bg-gray-200 transition-colors">
+                            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Container -->
+            <div class="flex-1 overflow-y-auto p-4 bg-gray-50">
+                <div id="messagesContainer" class="space-y-3">
+                    <!-- Welcome message -->
+                    <div class="flex justify-center">
+                        <div class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg text-sm">
+                            Welcome to WALID Chat! Channel: my-channel | Event: walid-message<br>
+                            <span class="text-xs">✅ No duplicate messages | ✅ Multi-browser support</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message Input -->
+            <div class="bg-white p-4 border-t border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <button class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                        <svg class="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zM14 9a1 1 0 100-2 1 1 0 000 2zM8.28 13.22a.75.75 0 00-1.06 1.06 3 3 0 104.56 0 .75.75 0 00-1.06-1.06 1.5 1.5 0 01-2.44 0z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <button class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                        <svg class="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
+                        </svg>
+                    </button>
+                    <input id="messageInput" type="text" placeholder="Type a message"
+                        class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <button id="sendButton"
+                        class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Setup CSRF token for all AJAX requests
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            // Initialize Pusher
+            Pusher.logToConsole = true;
+            const pusher = new Pusher('fe17bdbbfcc92f520c77', {
+                cluster: 'ap1'
+            });
+
+            // Single channel for all chats
+            const channel = pusher.subscribe('my-channel');
+
+            // Generate unique browser/session ID
+            const browserId = 'browser_' + Math.random().toString(36).substr(2, 9);
+            console.log('Browser ID:', browserId);
+
+            // Current chat configuration
+            let currentConfig = {
+                chat: 'walid',
+                channelName: 'my-channel',
+                event: 'walid-message',
+                browserId: browserId
+            };
+
+            // Bind to all possible events on the same channel
+            const events = ['walid-message', 'renal-message', 'admin-message'];
+            
+            events.forEach(eventName => {
+                channel.bind(eventName, function(data) {
+                    console.log(`Received ${eventName} on my-channel:`, data);
+                    
+                    // IMPORTANT: Jangan tampilkan pesan dari browser yang sama (sender)
+                    if (data.browserId && data.browserId === browserId) {
+                        console.log('Ignoring message from same browser (sender)');
+                        return;
+                    }
+                    
+                    // Handle message untuk chat yang aktif
+                    if (eventName === currentConfig.event) {
+                        // Pesan untuk chat yang sedang aktif - tampilkan langsung
+                        handleIncomingMessage(data);
+                    } else {
+                        // Pesan untuk chat lain - tampilkan notifikasi saja
+                        console.log(`Message received on ${eventName} (background chat)`);
+                        showChatNotification(eventName, data);
+                    }
+                });
+            });
+
+            // Get current time
+            function getCurrentTime() {
+                return new Date().toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    hour12: false 
+                });
+            }
+
+            // Update sidebar times on load
+            function updateSidebarTimes() {
+                $('.chat-time').text(getCurrentTime());
+            }
+
+            // Add message to chat
+            function addMessage(message, isOwn = false, sender = null) {
+                const time = getCurrentTime();
+                const messageClass = isOwn ? 'justify-end' : 'justify-start';
+                const bubbleClass = isOwn ? 'bg-green-500 text-white' : 'bg-white text-gray-800';
+                const timeClass = isOwn ? 'text-green-100' : 'text-gray-500';
+
+                const messageHtml = `
+                    <div class="flex ${messageClass}">
+                        <div class="${bubbleClass} max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow">
+                            ${!isOwn && sender ? `<p class="text-xs text-gray-500 mb-1 font-semibold">${sender}</p>` : ''}
+                            <p class="text-sm">${message}</p>
+                            <p class="text-xs ${timeClass} mt-1 text-right">${time}</p>
+                        </div>
+                    </div>
+                `;
+
+                $('#messagesContainer').append(messageHtml);
+                $('#messagesContainer').scrollTop($('#messagesContainer')[0].scrollHeight);
+            }
+
+            // Update sidebar last message
+            function updateSidebar(chatName, message) {
+                $('.chat-item').each(function() {
+                    const itemChatName = $(this).find('h3').text().trim();
+                    if (itemChatName === chatName) {
+                        const shortMessage = message.length > 30 ? message.substring(0, 30) + '...' : message;
+                        $(this).find('.chat-last-message').text(shortMessage);
+                        $(this).find('.chat-time').text(getCurrentTime());
+                    }
+                });
+            }
+
+            // Handle incoming messages (hanya untuk penerima, bukan pengirim)
+            function handleIncomingMessage(data) {
+                let message = '';
+                let sender = 'Anonymous';
+                
+                if (typeof data === 'string') {
+                    message = data;
+                } else if (data.message) {
+                    message = data.message;
+                    sender = data.sender || 'Anonymous';
+                }
+
+                // Tampilkan pesan dari pengirim lain (bukan dari browser ini)
+                console.log('Displaying message from:', sender, 'Browser ID:', data.browserId);
+                addMessage(message, false, sender);
+                updateSidebar(sender, message);
+            }
+
+            // Show notification for other chats
+            function showChatNotification(eventName, data) {
+                // Find the chat item for this event and add notification
+                $('.chat-item').each(function() {
+                    if ($(this).data('event') === eventName) {
+                        const chatName = $(this).find('h3').text().trim();
+                        
+                        // Update last message in sidebar
+                        const message = data.message || 'New message';
+                        const shortMessage = message.length > 30 ? message.substring(0, 30) + '...' : message;
+                        $(this).find('.chat-last-message').text(shortMessage);
+                        $(this).find('.chat-time').text(getCurrentTime());
+                        
+                        // Add notification badge if not current chat
+                        if (!$(this).hasClass('bg-green-50')) {
+                            // Add visual notification (red dot, etc)
+                            if (!$(this).find('.notification-badge').length) {
+                                $(this).find('h3').after('<span class="notification-badge ml-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">!</span>');
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Send message with jQuery AJAX
+            function sendMessage() {
+                const message = $('#messageInput').val().trim();
+                if (!message) return;
+
+                // 1. Tampilkan pesan LANGSUNG di UI pengirim (tidak menunggu Pusher)
+                addMessage(message, true);
+                $('#messageInput').val('');
+                
+                // 2. Update sidebar untuk pengirim
+                updateSidebar(currentConfig.chat.toUpperCase(), message);
+
+                // 3. Kirim ke backend untuk broadcast ke penerima lain
+                $.ajax({
+                    url: 'http://127.0.0.1:8000/api/broadcast',
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        message: message,
+                        sender: currentConfig.chat.toUpperCase(),
+                        channel: currentConfig.channelName,
+                        event: currentConfig.event,
+                        browserId: currentConfig.browserId,
+                        timestamp: new Date().toISOString()
+                    }),
+                    success: function(response) {
+                        console.log('Message broadcasted successfully:', response);
+                        // Pesan sudah ditampilkan di step 1, tidak perlu action lagi
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to send message:', error);
+                        
+                        // Jika gagal kirim, tampilkan pesan error
+                        addMessage('❌ Failed to send message. Please check your connection.', false, 'System');
+                    }
+                });
+            }
+
+            // Event listeners
+            $('#sendButton').on('click', sendMessage);
+            
+            $('#messageInput').on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    sendMessage();
+                }
+            });
+
+            // Chat selection with dynamic event switching (same channel)
+            $('.chat-item').on('click', function() {
+                // Remove active styling from all items
+                $('.chat-item').removeClass('bg-green-50 border-r-4 border-green-500');
+                
+                // Remove notification badge when opening chat
+                $(this).find('.notification-badge').remove();
+
+                // Add active styling to clicked item
+                $(this).addClass('bg-green-50 border-r-4 border-green-500');
+
+                // Get new chat configuration
+                const newChatName = $(this).find('h3').text().trim();
+                const newEvent = $(this).data('event');
+                const newAvatar = $(this).find('img').attr('src');
+
+                // Update current configuration (channel tetap sama)
+                currentConfig.chat = $(this).data('chat');
+                currentConfig.event = newEvent;
+
+                // Update UI
+                $('#chatName').text(newChatName);
+                $('#chatAvatar').attr('src', newAvatar);
+                $('#currentChannel').text(currentConfig.channelName);
+                $('#currentEvent').text(newEvent);
+
+                // Clear messages and show welcome
+                $('#messagesContainer').html(`
+                    <div class="flex justify-center">
+                        <div class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg text-sm">
+                            Welcome to ${newChatName} Chat!<br>
+                            Channel: ${currentConfig.channelName} | Event: ${newEvent}<br>
+                            Browser ID: ${currentConfig.browserId}
+                        </div>
+                    </div>
+                `);
+
+                console.log('Switched to:', currentConfig);
+            });
+
+            // Initialize sidebar times
+            updateSidebarTimes();
+        });
+    </script>
+</body>
+
+</html>
