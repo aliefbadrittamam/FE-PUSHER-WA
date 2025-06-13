@@ -169,7 +169,7 @@
             });
 
             // Initialize Pusher
-            Pusher.logToConsole = true;
+            Pusher.logToConsole = false;
             const pusher = new Pusher('fe17bdbbfcc92f520c77', {
                 cluster: 'ap1'
             });
@@ -317,7 +317,7 @@
 
                 // 3. Kirim ke backend untuk broadcast ke penerima lain
                 $.ajax({
-                    url: 'http://127.0.0.1:8000/api/broadcast',
+                    url: 'https://ramanur.mebelin.my.id/api/broadcast',
                     type: 'POST',
                     dataType: 'json',
                     contentType: 'application/json',
