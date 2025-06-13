@@ -154,7 +154,7 @@
 
                 // 3. Kirim ke backend untuk broadcast ke penerima lain
                 $.ajax({
-                    url: 'https://ramanur.mebelin.my.id/api/broadcast',
+                    url: 'https://aliefbt.mebelin.my.id/api/broadcast',
                     type: 'POST',
                     dataType: 'json',
                     contentType: 'application/json',
