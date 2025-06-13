@@ -5,168 +5,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>WhatsApp Web - Dynamic Chat</title>
+    <title>Simple Chat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
 </head>
 
-<body class="bg-gray-100 h-screen overflow-hidden">
-    <div class="flex h-full relative">
-        <!-- Mobile Menu Button -->
-        <button id="mobileMenuBtn" class="md:hidden fixed top-4 left-4 z-50 p-2 bg-green-500 text-white rounded-lg shadow-lg">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
-            </svg>
-        </button>
-
+<body class="bg-gray-50 h-screen">
+    <div class="flex h-full max-w-6xl mx-auto bg-white shadow-lg">
+        
         <!-- Sidebar -->
-        <div id="sidebar" class="w-full md:w-1/3 lg:w-1/4 xl:w-1/5 bg-white border-r border-gray-300 flex flex-col absolute md:relative z-40 h-full transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+        <div class="w-1/3 border-r border-gray-200 flex flex-col">
             <!-- Header -->
-            <div class="bg-gray-50 p-4 border-b border-gray-200">
-                <div class="flex items-center space-x-3">
-                    <img src="https://picsum.photos/40/40?random=1" alt="User" class="w-10 h-10 rounded-full">
-                    <h2 class="font-semibold text-gray-800">My Chats</h2>
-                </div>
-            </div>
-
-            <!-- Search -->
-            <div class="p-3 border-b border-gray-200">
-                <div class="relative">
-                    <input type="text" placeholder="Search or start new chat"
-                        class="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg focus:outline-none focus:bg-white focus:ring-2 focus:ring-green-500">
-                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </div>
+            <div class="p-4 border-b border-gray-200 bg-gray-100">
+                <h2 class="text-lg font-semibold text-gray-800">Chats</h2>
             </div>
 
             <!-- Chat List -->
             <div class="flex-1 overflow-y-auto">
-                <div id="chatList">
-                    <div class="chat-item p-3 md:p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors bg-green-50 border-r-4 border-green-500"
-                        data-chat="walid" data-event="walid-message">
-                        <div class="flex items-center space-x-2 md:space-x-3">
-                            <img src="https://picsum.photos/48/48?random=2" alt="WALID"
-                                class="w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <div class="flex justify-between items-start">
-                                    <h3 class="font-semibold text-gray-900 truncate text-sm md:text-base">WALID</h3>
-                                    <span class="text-xs text-gray-500 chat-time flex-shrink-0 ml-2"></span>
-                                </div>
-                                <p class="text-xs md:text-sm text-gray-600 truncate chat-last-message">Welcome to WALID chat.</p>
-                            </div>
+                <div class="chat-item p-4 hover:bg-gray-50 cursor-pointer border-l-4 border-green-500 bg-green-50"
+                    data-chat="walid" data-event="walid-message">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            W
                         </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900">WALID</h3>
+                            <p class="text-sm text-gray-500 chat-last-message">Welcome to WALID chat</p>
+                        </div>
+                        <span class="text-xs text-gray-400 chat-time"></span>
                     </div>
+                </div>
 
-                    <div class="chat-item p-3 md:p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
-                        data-chat="renal" data-event="renal-message">
-                        <div class="flex items-center space-x-2 md:space-x-3">
-                            <img src="https://picsum.photos/48/48?random=3" alt="RENAL"
-                                class="w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <div class="flex justify-between items-start">
-                                    <h3 class="font-semibold text-gray-900 truncate text-sm md:text-base">RENAL</h3>
-                                    <span class="text-xs text-gray-500 chat-time flex-shrink-0 ml-2"></span>
-                                </div>
-                                <p class="text-xs md:text-sm text-gray-600 truncate chat-last-message">Welcome to RENAL chat.</p>
-                            </div>
+                <div class="chat-item p-4 hover:bg-gray-50 cursor-pointer"
+                    data-chat="renal" data-event="renal-message">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            R
                         </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900">RENAL</h3>
+                            <p class="text-sm text-gray-500 chat-last-message">Welcome to RENAL chat</p>
+                        </div>
+                        <span class="text-xs text-gray-400 chat-time"></span>
                     </div>
+                </div>
 
-                    <div class="chat-item p-3 md:p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
-                        data-chat="admin" data-event="admin-message">
-                        <div class="flex items-center space-x-2 md:space-x-3">
-                            <img src="https://picsum.photos/48/48?random=4" alt="ADMIN"
-                                class="w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <div class="flex justify-between items-start">
-                                    <h3 class="font-semibold text-gray-900 truncate text-sm md:text-base">ADMIN</h3>
-                                    <span class="text-xs text-gray-500 chat-time flex-shrink-0 ml-2"></span>
-                                </div>
-                                <p class="text-xs md:text-sm text-gray-600 truncate chat-last-message">Admin support channel.</p>
-                            </div>
+                <div class="chat-item p-4 hover:bg-gray-50 cursor-pointer"
+                    data-chat="admin" data-event="admin-message">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            A
                         </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900">ADMIN</h3>
+                            <p class="text-sm text-gray-500 chat-last-message">Admin support channel</p>
+                        </div>
+                        <span class="text-xs text-gray-400 chat-time"></span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Chat Area -->
-        <div class="flex-1 flex flex-col w-full md:w-2/3 lg:w-3/4 xl:w-4/5">
+        <div class="flex-1 flex flex-col">
             <!-- Chat Header -->
-            <div class="bg-gray-50 p-3 md:p-4 border-b border-gray-200">
-                <div class="flex items-center space-x-2 md:space-x-3">
-                    <img id="chatAvatar" src="https://picsum.photos/40/40?random=2" alt="Chat"
-                        class="w-8 h-8 md:w-10 md:h-10 rounded-full flex-shrink-0">
-                    <div class="flex-1 min-w-0">
-                        <h3 id="chatName" class="font-semibold text-gray-900 text-sm md:text-base">WALID</h3>
-                        <p id="chatStatus" class="text-xs md:text-sm text-gray-500 truncate">
-                            <span class="hidden sm:inline">Channel: <span id="currentChannel">my-channel</span> | </span>
+            <div class="p-4 border-b border-gray-200 bg-gray-100">
+                <div class="flex items-center space-x-3">
+                    <div id="chatAvatar" class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                        W
+                    </div>
+                    <div>
+                        <h3 id="chatName" class="font-semibold text-gray-900">WALID</h3>
+                        <p class="text-sm text-gray-500">
                             Event: <span id="currentEvent">walid-message</span>
                         </p>
-                    </div>
-                    <div class="flex space-x-1 md:space-x-2 flex-shrink-0">
-                        <button class="p-1.5 md:p-2 rounded-full hover:bg-gray-200 transition-colors">
-                            <svg class="w-4 h-4 md:w-5 md:h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                            </svg>
-                        </button>
-                        <button class="p-1.5 md:p-2 rounded-full hover:bg-gray-200 transition-colors">
-                            <svg class="w-4 h-4 md:w-5 md:h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
-                            </svg>
-                        </button>
-                        <button class="p-1.5 md:p-2 rounded-full hover:bg-gray-200 transition-colors">
-                            <svg class="w-4 h-4 md:w-5 md:h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- Messages Container -->
-            <div class="flex-1 overflow-y-auto p-2 md:p-4 bg-gray-50">
-                <div id="messagesContainer" class="space-y-2 md:space-y-3">
+            <div class="flex-1 overflow-y-auto p-4 bg-gray-50">
+                <div id="messagesContainer" class="space-y-3">
                     <!-- Welcome message -->
                     <div class="flex justify-center">
-                        <div class="bg-yellow-100 text-yellow-800 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm max-w-xs md:max-w-none text-center">
-                            Welcome to WALID Chat! Channel: my-channel | Event: walid-message<br>
-                            <span class="text-xs">✅ No duplicate messages | ✅ Multi-browser support</span>
+                        <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm">
+                            Welcome to WALID Chat! Start typing to send messages.
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Message Input -->
-            <div class="bg-white p-2 md:p-4 border-t border-gray-200 safe-area-bottom">
-                <div class="flex items-center space-x-2 md:space-x-3">
-                    <button class="p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors flex-shrink-0">
-                        <svg class="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zM14 9a1 1 0 100-2 1 1 0 000 2zM8.28 13.22a.75.75 0 00-1.06 1.06 3 3 0 104.56 0 .75.75 0 00-1.06-1.06 1.5 1.5 0 01-2.44 0z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <button class="p-1.5 md:p-2 rounded-full hover:bg-gray-100 transition-colors flex-shrink-0">
-                        <svg class="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
-                        </svg>
-                    </button>
-                    <input id="messageInput" type="text" placeholder="Type a message"
-                        class="flex-1 px-3 md:px-4 py-2 text-sm md:text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 min-w-0">
+            <div class="p-4 bg-white border-t border-gray-200">
+                <div class="flex space-x-3">
+                    <input id="messageInput" type="text" placeholder="Type a message..."
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <button id="sendButton"
-                        class="px-4 md:px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm md:text-base flex-shrink-0">
+                        class="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors">
                         Send
                     </button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Mobile Overlay -->
-    <div id="mobileOverlay" class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
 
     <script>
         $(document).ready(function() {
@@ -241,15 +183,14 @@
             function addMessage(message, isOwn = false, sender = null) {
                 const time = getCurrentTime();
                 const messageClass = isOwn ? 'justify-end' : 'justify-start';
-                const bubbleClass = isOwn ? 'bg-green-500 text-white' : 'bg-white text-gray-800';
-                const timeClass = isOwn ? 'text-green-100' : 'text-gray-500';
+                const bubbleClass = isOwn ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border border-gray-200';
 
                 const messageHtml = `
                     <div class="flex ${messageClass}">
-                        <div class="${bubbleClass} max-w-xs md:max-w-sm lg:max-w-md px-3 md:px-4 py-2 rounded-lg shadow">
+                        <div class="${bubbleClass} max-w-xs px-4 py-2 rounded-lg">
                             ${!isOwn && sender ? `<p class="text-xs text-gray-500 mb-1 font-semibold">${sender}</p>` : ''}
-                            <p class="text-sm md:text-base break-words">${message}</p>
-                            <p class="text-xs ${timeClass} mt-1 text-right">${time}</p>
+                            <p class="text-sm">${message}</p>
+                            <p class="text-xs ${isOwn ? 'text-blue-100' : 'text-gray-500'} mt-1 text-right">${time}</p>
                         </div>
                     </div>
                 `;
@@ -326,7 +267,7 @@
 
                 // 3. Kirim ke backend untuk broadcast ke penerima lain
                 $.ajax({
-                    url: 'http://127.0.0.1:8000/api/broadcast',
+                    url: 'https://ramanur.mebelin.my.id/api/broadcast',
                     type: 'POST',
                     dataType: 'json',
                     contentType: 'application/json',
@@ -363,18 +304,25 @@
             // Chat selection with dynamic event switching (same channel)
             $('.chat-item').on('click', function() {
                 // Remove active styling from all items
-                $('.chat-item').removeClass('bg-green-50 border-r-4 border-green-500');
+                $('.chat-item').removeClass('bg-green-50 border-l-4 border-green-500');
                 
                 // Remove notification badge when opening chat
                 $(this).find('.notification-badge').remove();
 
                 // Add active styling to clicked item
-                $(this).addClass('bg-green-50 border-r-4 border-green-500');
+                $(this).addClass('bg-green-50 border-l-4 border-green-500');
 
                 // Get new chat configuration
                 const newChatName = $(this).find('h3').text().trim();
                 const newEvent = $(this).data('event');
-                const newAvatar = $(this).find('img').attr('src');
+                const firstLetter = newChatName.charAt(0);
+                
+                // Set avatar colors
+                const avatarColors = {
+                    'WALID': 'bg-blue-500',
+                    'RENAL': 'bg-purple-500', 
+                    'ADMIN': 'bg-red-500'
+                };
 
                 // Update current configuration (channel tetap sama)
                 currentConfig.chat = $(this).data('chat');
@@ -382,61 +330,20 @@
 
                 // Update UI
                 $('#chatName').text(newChatName);
-                $('#chatAvatar').attr('src', newAvatar);
-                $('#currentChannel').text(currentConfig.channelName);
+                $('#chatAvatar').removeClass('bg-blue-500 bg-purple-500 bg-red-500').addClass(avatarColors[newChatName]).text(firstLetter);
                 $('#currentEvent').text(newEvent);
 
                 // Clear messages and show welcome
                 $('#messagesContainer').html(`
                     <div class="flex justify-center">
-                        <div class="bg-yellow-100 text-yellow-800 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm max-w-xs md:max-w-none text-center">
-                            Welcome to ${newChatName} Chat!<br>
-                            <span class="hidden sm:inline">Channel: ${currentConfig.channelName} | </span>Event: ${newEvent}<br>
-                            <span class="text-xs">Browser ID: ${currentConfig.browserId}</span>
+                        <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm">
+                            Welcome to ${newChatName} Chat! Start typing to send messages.
                         </div>
                     </div>
                 `);
 
-                // Close sidebar on mobile after selection
-                if (window.innerWidth < 768) {
-                    closeMobileSidebar();
-                }
-
                 console.log('Switched to:', currentConfig);
             });
-
-            // Mobile menu functionality
-            function openMobileSidebar() {
-                $('#sidebar').removeClass('-translate-x-full');
-                $('#mobileOverlay').removeClass('hidden');
-                $('body').addClass('overflow-hidden');
-            }
-
-            function closeMobileSidebar() {
-                $('#sidebar').addClass('-translate-x-full');
-                $('#mobileOverlay').addClass('hidden');
-                $('body').removeClass('overflow-hidden');
-            }
-
-            $('#mobileMenuBtn').on('click', openMobileSidebar);
-            $('#closeSidebarBtn').on('click', closeMobileSidebar);
-            $('#mobileOverlay').on('click', closeMobileSidebar);
-
-            // Handle resize
-            $(window).on('resize', function() {
-                if (window.innerWidth >= 768) {
-                    // Desktop view - always show sidebar
-                    $('#sidebar').removeClass('-translate-x-full');
-                    $('#mobileOverlay').addClass('hidden');
-                    $('body').removeClass('overflow-hidden');
-                } else {
-                    // Mobile view - hide sidebar by default
-                    if (!$('#sidebar').hasClass('-translate-x-full')) {
-                        closeMobileSidebar();
-                    }
-                }
-            });
-
 
             // Initialize sidebar times
             updateSidebarTimes();
